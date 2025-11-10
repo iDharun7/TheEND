@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dharun's Countdown</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.8); }
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            10% { transform: scale(1.15); }
+            20% { transform: scale(1); }
+            30% { transform: scale(1.1); }
+            40% { transform: scale(1); }
+        }
+        
+        @keyframes break-left {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            100% { transform: translate(-150px, 200px) rotate(-45deg); opacity: 0; }
+        }
+        
+        @keyframes break-right {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            100% { transform: translate(150px, 200px) rotate(45deg); opacity: 0; }
+        }
+        
+        @keyframes crack-appear {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+        
+        @keyframes shatter-particle {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+        
+        .glow-card {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        .heartbeat-animation {
+            animation: heartbeat 1.5s ease-in-out infinite;
+            transform-origin: center;
+        }
+        
+        .broken .heart-left {
+            animation: break-left 1.5s ease-out forwards;
+        }
+        
+        .broken .heart-right {
+            animation: break-right 1.5s ease-out forwards;
+        }
+        
+        .broken .crack-line {
+            animation: crack-appear 0.5s ease-out forwards;
+        }
+        
+        .particle {
+            animation: shatter-particle 1s ease-out forwards;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .time-unit {
+            transition: all 0.3s ease;
+        }
+        
+        .time-unit:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 overflow-x-hidden">
+    <div class="max-w-4xl w-full px-2 sm:px-4">
+        <!-- Countdown Card -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl glow-card border border-white/20 mb-8 sm:mb-12">
+            <!-- Header -->
+            <div class="text-center mb-6 sm:mb-8">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4">
+                    💔 Dharun's Countdown 💔
+                </h1>
+                <p class="text-base sm:text-lg md:text-xl text-white/90">Until life's brightest chapter closes...</p>
+            </div>
+
+            <!-- Countdown Display -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
+                <div class="time-unit bg-gradient-to-br from-red-500 to-pink-600 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center">
+                    <div class="text-3xl sm:text-4xl md:text-5xl font-bold text-white" id="days">00</div>
+                    <div class="text-xs sm:text-sm text-white/80 mt-1 sm:mt-2">DAYS</div>
+                </div>
+                <div class="time-unit bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center">
+                    <div class="text-3xl sm:text-4xl md:text-5xl font-bold text-white" id="hours">00</div>
+                    <div class="text-xs sm:text-sm text-white/80 mt-1 sm:mt-2">HOURS</div>
+                </div>
+                <div class="time-unit bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center">
+                    <div class="text-3xl sm:text-4xl md:text-5xl font-bold text-white" id="minutes">00</div>
+                    <div class="text-xs sm:text-sm text-white/80 mt-1 sm:mt-2">MINUTES</div>
+                </div>
+                <div class="time-unit bg-gradient-to-br from-green-500 to-teal-600 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center">
+                    <div class="text-3xl sm:text-4xl md:text-5xl font-bold text-white" id="seconds">00</div>
+                    <div class="text-xs sm:text-sm text-white/80 mt-1 sm:mt-2">SECONDS</div>
+                </div>
+                <div class="time-unit bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center col-span-2 sm:col-span-3 md:col-span-1">
+                    <div class="text-2xl sm:text-3xl md:text-4xl font-bold text-white" id="milliseconds">000</div>
+                    <div class="text-xs sm:text-sm text-white/80 mt-1 sm:mt-2">MILLISECONDS</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Animated Heart -->
+        <div class="flex justify-center items-center" style="min-height: 300px;">
+            <svg id="heartSvg" class="w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96" viewBox="0 0 400 400">
+                <defs>
+                    <!-- Gradient for heart -->
+                    <linearGradient id="heartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ff6b9d;stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:#c44569;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#8e3a59;stop-opacity:1" />
+                    </linearGradient>
+                    
+                    <!-- Glow filter -->
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <!-- Particles (hidden initially) -->
+                <g id="particles"></g>
+                
+                <!-- Heart Group -->
+                <g id="heartGroup">
+                    <!-- Left Half -->
+                    <path id="heartLeft" class="heart-left heartbeat-animation" 
+                          d="M 200,280 C 200,280 120,220 120,160 C 120,120 140,100 170,100 C 190,100 200,110 200,130"
+                          fill="url(#heartGradient)" 
+                          stroke="#ff1744" 
+                          stroke-width="3"
+                          filter="url(#glow)"/>
+                    
+                    <!-- Right Half -->
+                    <path id="heartRight" class="heart-right heartbeat-animation" 
+                          d="M 200,280 C 200,280 280,220 280,160 C 280,120 260,100 230,100 C 210,100 200,110 200,130"
+                          fill="url(#heartGradient)" 
+                          stroke="#ff1744" 
+                          stroke-width="3"
+                          filter="url(#glow)"/>
+                    
+                    <!-- Crack line (hidden initially) -->
+                    <path id="crackLine" class="crack-line" 
+                          d="M 200,100 L 195,150 L 205,180 L 195,220 L 200,280"
+                          stroke="#1a1a1a" 
+                          stroke-width="4"
+                          fill="none"
+                          stroke-dasharray="1000"
+                          stroke-dashoffset="1000"
+                          opacity="0"/>
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        const targetDate = new Date('2025-11-10T18:10:00').getTime();
+        let heartBroken = false;
+
+        function createParticles() {
+            const particlesGroup = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const angle = (Math.PI * 2 * i) / particleCount;
+                const distance = 50 + Math.random() * 100;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                const particle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                particle.setAttribute('cx', '200');
+                particle.setAttribute('cy', '180');
+                particle.setAttribute('r', Math.random() * 3 + 2);
+                particle.setAttribute('fill', '#ff1744');
+                particle.setAttribute('opacity', '0.8');
+                particle.classList.add('particle');
+                particle.style.setProperty('--tx', `${tx}px`);
+                particle.style.setProperty('--ty', `${ty}px`);
+                particle.style.animationDelay = `${i * 0.02}s`;
+                
+                particlesGroup.appendChild(particle);
+            }
+        }
+
+        function breakHeart() {
+            if (heartBroken) return;
+            heartBroken = true;
+            
+            const heartGroup = document.getElementById('heartGroup');
+            const crackLine = document.getElementById('crackLine');
+            const heartLeft = document.getElementById('heartLeft');
+            const heartRight = document.getElementById('heartRight');
+            
+            // Remove heartbeat animation
+            heartLeft.classList.remove('heartbeat-animation');
+            heartRight.classList.remove('heartbeat-animation');
+            
+            // Show crack
+            crackLine.setAttribute('opacity', '1');
+            
+            // Add broken class after crack appears
+            setTimeout(() => {
+                heartGroup.classList.add('broken');
+                createParticles();
+            }, 500);
+        }
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                document.getElementById('milliseconds').textContent = '000';
+                breakHeart();
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            const milliseconds = Math.floor((distance % 1000));
+
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            document.getElementById('milliseconds').textContent = String(milliseconds).padStart(3, '0');
+        }
+
+        // Update every 10 milliseconds for smooth millisecond display
+        setInterval(updateCountdown, 10);
+        updateCountdown();
+
+        // For testing: uncomment to see heart break after 5 seconds
+        // setTimeout(breakHeart, 5000);
+    </script>
+</body>
+</html>
